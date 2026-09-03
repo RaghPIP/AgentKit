@@ -3,20 +3,32 @@ import { executeIndieFounderRadarFlow } from '@/lib/lamatic-client';
 import { parseReportText } from '@/lib/parse-report';
 
 export async function POST(req: NextRequest) {
+  let body: unknown;
   try {
-    const body = await req.json();
-    const idea = typeof body?.idea === 'string' ? body.idea.trim() : '';
+    body = await req.json();
+  } catch {
+    return NextResponse.json(
+      { success: false, error: 'Invalid JSON payload.' },
+      { status: 400 }
+    );
+  }
 
-    if (!idea) {
-      return NextResponse.json(
-        { success: false, error: 'Please enter a startup idea to analyze.' },
-        { status: 400 }
-      );
-    }
+  const idea =
+    typeof (body as { idea?: unknown })?.idea === 'string'
+      ? (body as { idea: string }).idea.trim()
+      : '';
 
+  if (!idea) {
+    return NextResponse.json(
+      { success: false, error: 'Please enter a startup idea to analyze.' },
+      { status: 400 }
+    );
+  }
+
+  try {
     // Call Lamatic flow
     const execution = await executeIndieFounderRadarFlow(idea);
-    
+
     // Extract raw text from workflow result
     let rawReportText = '';
     const result = execution.result;
@@ -49,8 +61,11 @@ export async function POST(req: NextRequest) {
     });
   } catch (error: unknown) {
     console.error('Error executing Indie Founder Radar flow:', error);
-    const message = error instanceof Error ? error.message : 'Unknown error occurred while analyzing startup idea.';
-    
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Unknown error occurred while analyzing startup idea.';
+
     return NextResponse.json(
       {
         success: false,

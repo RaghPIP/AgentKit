@@ -112,7 +112,7 @@ export default function Home() {
                 {SCAN_STEPS[currentStepIndex].label}
               </p>
               <p className="text-xs text-neutral-500">
-                Connecting to Lamatic Serper node & GPT-4o analyst
+                Connecting to Lamatic Serper node & Gemini analyst
               </p>
             </div>
 
