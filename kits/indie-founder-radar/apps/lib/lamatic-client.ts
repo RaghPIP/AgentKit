@@ -1,4 +1,6 @@
-// lib/lamatic-client.ts — Lamatic GraphQL Execution Client for Indie Founder Radar
+// lib/lamatic-client.ts — Lamatic SDK Execution Client for Indie Founder Radar
+
+import { Lamatic } from 'lamatic';
 
 export interface ExecuteWorkflowResult {
   status: string;
@@ -8,7 +10,7 @@ export interface ExecuteWorkflowResult {
 }
 
 export interface LamaticConfig {
-  apiUrl: string;
+  endpoint: string;
   projectId: string;
   flowId: string;
   apiKey: string;
@@ -38,13 +40,32 @@ export function getLamaticConfig(): LamaticConfig {
     }
   }
 
+  if (!apiKey) {
+    throw new Error(
+      'Missing LAMATIC_API_KEY in environment variables. Please check your apps/.env.local file.'
+    );
+  }
+
+  if (!apiUrl) {
+    throw new Error(
+      'Missing LAMATIC_API_URL in apps/.env.local. In Lamatic Studio, open your flow and copy the deployed API Endpoint URL.'
+    );
+  }
+
   // Ensure valid endpoint structure with HTTPS
-  if (apiUrl && !apiUrl.startsWith('http://') && !apiUrl.startsWith('https://')) {
+  if (!apiUrl.startsWith('http://') && !apiUrl.startsWith('https://')) {
     apiUrl = `https://${apiUrl}`;
   }
 
+  // Reject insecure HTTP connections to prevent cleartext transmission of sensitive credentials (CWE-319)
+  if (!apiUrl.startsWith('https://')) {
+    throw new Error(
+      `Insecure connection rejected: LAMATIC_API_URL must use the HTTPS protocol (https://) to protect API credentials. Provided: "${apiUrl}"`
+    );
+  }
+
   return {
-    apiUrl,
+    endpoint: apiUrl.replace(/\/+$/, ''),
     projectId,
     flowId,
     apiKey,
@@ -52,112 +73,88 @@ export function getLamaticConfig(): LamaticConfig {
 }
 
 /**
- * Executes the Indie Founder Radar flow with a given startup idea.
+ * Creates and returns an initialized Lamatic SDK client.
+ */
+export function createLamaticClient(): { client: Lamatic; flowId: string } {
+  const { endpoint, projectId, flowId, apiKey } = getLamaticConfig();
+  const client = new Lamatic({
+    endpoint,
+    projectId,
+    apiKey,
+  });
+  return { client, flowId };
+}
+
+/**
+ * Executes the Indie Founder Radar flow via the Lamatic SDK with bounded timeout and cancellation support.
  */
 export async function executeIndieFounderRadarFlow(
   idea: string,
-  options?: { signal?: AbortSignal }
+  options?: { signal?: AbortSignal; timeoutMs?: number }
 ): Promise<ExecuteWorkflowResult> {
-  const config = getLamaticConfig();
-
-  if (!config.apiKey) {
-    throw new Error(
-      'Missing LAMATIC_API_KEY in environment variables. Please check your .env.local file.'
-    );
-  }
-
-  if (!config.apiUrl) {
-    throw new Error(
-      'Missing LAMATIC_API_URL in .env.local. In Lamatic Studio, open your flow and copy the deployed API Endpoint URL.'
-    );
-  }
-
-  // Determine the endpoint URL
-  let endpoint = config.apiUrl;
-  if (!endpoint.endsWith('/graphql') && !endpoint.includes('/api/')) {
-    // Check if base domain
-    if (endpoint.endsWith('/')) {
-      endpoint = `${endpoint}graphql`;
-    } else {
-      endpoint = `${endpoint}/graphql`;
-    }
-  }
-
-  // Reject insecure HTTP connections to prevent cleartext transmission of sensitive credentials (CWE-319)
-  if (!endpoint.startsWith('https://')) {
-    throw new Error(
-      `Insecure connection rejected: LAMATIC_API_URL must use the HTTPS protocol (https://) to protect API credentials. Provided: "${endpoint}"`
-    );
-  }
-
-  const query = `
-    query ExecuteWorkflow($workflowId: String!, $idea: String) {
-      executeWorkflow(
-        workflowId: $workflowId
-        payload: {
-          idea: $idea
-        }
-      ) {
-        status
-        result
-      }
-    }
-  `;
-
+  const { client, flowId } = createLamaticClient();
+  const timeoutMs = options?.timeoutMs ?? 60_000;
   const startTime = performance.now();
 
-  let response: Response;
+  let timer: NodeJS.Timeout | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      const err = new Error(`Lamatic workflow timed out after ${timeoutMs}ms.`);
+      err.name = 'TimeoutError';
+      reject(err);
+    }, timeoutMs);
+  });
+
+  const abortPromise = new Promise<never>((_, reject) => {
+    if (options?.signal?.aborted) {
+      const err = new Error('Request was aborted by caller.');
+      err.name = 'AbortError';
+      reject(err);
+    } else if (options?.signal) {
+      options.signal.addEventListener('abort', () => {
+        const err = new Error('Request was aborted by caller.');
+        err.name = 'AbortError';
+        reject(err);
+      });
+    }
+  });
+
   try {
-    response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${config.apiKey}`,
-        'x-project-id': config.projectId,
-      },
-      body: JSON.stringify({
-        query,
-        variables: {
-          workflowId: config.flowId,
-          idea,
-        },
-      }),
-      signal: options?.signal,
-    });
-  } catch (fetchErr: unknown) {
-    const msg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-    throw new Error(`Could not connect to Lamatic API at "${endpoint}": ${msg}`);
-  }
+    const execution: unknown = await Promise.race([
+      client.executeFlow(flowId, { idea }),
+      timeoutPromise,
+      abortPromise,
+    ]);
 
-  const endTime = performance.now();
-  const latencyMs = Math.round((endTime - startTime) * 10) / 10;
+    const endTime = performance.now();
+    const latencyMs = Math.round((endTime - startTime) * 10) / 10;
 
-  if (!response.ok) {
-    const errorBody = await response.text().catch(() => '');
-    if (errorBody.includes('Error 1014') || errorBody.includes('CNAME Cross-User Banned')) {
+    const execObj = execution as {
+      status?: string;
+      result?: unknown;
+      data?: unknown;
+      message?: string;
+      error?: string;
+      requestId?: string;
+    };
+
+    if (execObj?.status !== 'success' && execObj?.status && execObj.status !== 'completed') {
       throw new Error(
-        `Cloudflare Error 1014: The endpoint "${endpoint}" is not a direct API gateway. In Lamatic Studio, deploy your flow and copy your project's unique endpoint URL (e.g. from the API / Deploy tab) and paste it into apps/.env.local as LAMATIC_API_URL.`
+        `Lamatic workflow execution failed: ${execObj?.message || execObj?.error || 'Unknown error'}`
       );
     }
-    throw new Error(`Lamatic API returned HTTP ${response.status}: ${errorBody.slice(0, 300)}`);
+
+    const result = (execObj?.result ?? execObj?.data ?? execution) as Record<string, unknown> | string;
+
+    return {
+      status: execObj?.status || 'success',
+      result,
+      requestId: execObj?.requestId,
+      latencyMs,
+    };
+  } finally {
+    if (timer) {
+      clearTimeout(timer);
+    }
   }
-
-  const json = await response.json();
-
-  if (json.errors && json.errors.length > 0) {
-    const errorMsg = json.errors.map((e: { message?: string }) => e.message || JSON.stringify(e)).join(', ');
-    throw new Error(`Lamatic GraphQL error: ${errorMsg}`);
-  }
-
-  const workflowOutput = json.data?.executeWorkflow;
-  if (!workflowOutput) {
-    throw new Error(`Lamatic API did not return executeWorkflow data: ${JSON.stringify(json)}`);
-  }
-
-  return {
-    status: workflowOutput.status || 'success',
-    result: workflowOutput.result,
-    requestId: workflowOutput.requestId,
-    latencyMs,
-  };
 }

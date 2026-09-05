@@ -69,7 +69,7 @@ export function IdeaInput({ onSubmit, isLoading }: IdeaInputProps) {
   return (
     <div className="w-full max-w-3xl mx-auto space-y-4">
       <form onSubmit={handleSubmit(onFormSubmit)} className="relative group">
-        <div className="relative rounded-2xl bg-neutral-900/90 border border-neutral-800 p-2 shadow-2xl backdrop-blur-xl transition-all duration-300 focus-within:border-emerald-500/50 focus-within:shadow-[0_0_30px_rgba(16,185,129,0.15)]">
+        <div className="relative rounded-2xl bg-card/90 border border-border p-2 shadow-2xl backdrop-blur-xl transition-all duration-300 focus-within:border-primary/50 focus-within:shadow-[0_0_30px_rgba(16,185,129,0.15)]">
           <label htmlFor="startup-idea-input" className="sr-only">
             Startup idea
           </label>
@@ -80,30 +80,30 @@ export function IdeaInput({ onSubmit, isLoading }: IdeaInputProps) {
             disabled={isLoading}
             placeholder="Enter your startup idea (e.g., A tool that converts Figma designs directly into production-ready React Native components for solo mobile devs)..."
             rows={4}
-            className="w-full bg-transparent px-4 py-3 text-neutral-100 placeholder-neutral-500 resize-none outline-none text-base sm:text-lg rounded-xl focus:ring-0 leading-relaxed disabled:opacity-60"
+            className="w-full bg-transparent px-4 py-3 text-foreground placeholder:text-muted-foreground resize-none outline-none text-base sm:text-lg rounded-xl focus:ring-0 leading-relaxed disabled:opacity-60"
           />
 
           {errors.idea && (
-            <div className="flex items-center gap-1.5 px-4 py-1 text-xs text-rose-400 font-medium animate-in fade-in duration-200">
+            <div className="flex items-center gap-1.5 px-4 py-1 text-xs text-destructive font-medium animate-in fade-in duration-200">
               <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
               <span>{errors.idea.message}</span>
             </div>
           )}
 
-          <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-2 border-t border-neutral-800/60 mt-1">
-            <div className="flex items-center gap-2 text-xs text-neutral-400">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-2 border-t border-border/60 mt-1">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
               <span>Be specific about target user & problem for the sharpest analysis</span>
             </div>
 
             <button
               type="submit"
               disabled={!ideaValue?.trim() || !isValid || isLoading}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer disabled:cursor-not-allowed bg-gradient-to-r from-emerald-500 to-teal-600 text-black hover:from-emerald-400 hover:to-teal-500 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] active:scale-95 disabled:opacity-50 disabled:shadow-none"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer disabled:cursor-not-allowed bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] active:scale-95 disabled:opacity-50 disabled:shadow-none"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-black" />
+                  <Loader2 className="w-4 h-4 animate-spin text-primary-foreground" />
                   <span>Scanning Market...</span>
                 </>
               ) : (
@@ -119,7 +119,7 @@ export function IdeaInput({ onSubmit, isLoading }: IdeaInputProps) {
 
       {/* Quick Example Presets */}
       <div className="space-y-2">
-        <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-medium px-1">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium px-1">
           <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
           <span>Or try one of these example ideas:</span>
         </div>
@@ -130,12 +130,12 @@ export function IdeaInput({ onSubmit, isLoading }: IdeaInputProps) {
               type="button"
               onClick={() => handleSelectExample(item.idea)}
               disabled={isLoading}
-              className="text-left p-3 rounded-xl bg-neutral-900/60 hover:bg-neutral-800/80 border border-neutral-800/80 hover:border-neutral-700 text-xs transition-all duration-150 group cursor-pointer disabled:opacity-50"
+              className="text-left p-3 rounded-xl bg-card/60 hover:bg-card-muted/80 border border-border hover:border-muted-foreground/30 text-xs transition-all duration-150 group cursor-pointer disabled:opacity-50"
             >
-              <div className="font-semibold text-neutral-200 group-hover:text-emerald-400 transition-colors">
+              <div className="font-semibold text-card-foreground group-hover:text-primary transition-colors">
                 {item.title}
               </div>
-              <p className="text-neutral-400 line-clamp-2 mt-1 leading-relaxed">
+              <p className="text-muted-foreground line-clamp-2 mt-1 leading-relaxed">
                 {item.idea}
               </p>
             </button>

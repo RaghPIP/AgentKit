@@ -18,16 +18,27 @@ export async function POST(req: NextRequest) {
       ? (body as { idea: string }).idea.trim()
       : '';
 
-  if (!idea) {
+  // Enforce server-side 5–1,000-character limits to prevent resource exhaustion (CWE-770)
+  if (!idea || idea.length < 5) {
     return NextResponse.json(
-      { success: false, error: 'Please enter a startup idea to analyze.' },
+      { success: false, error: 'Please enter a startup idea with at least 5 characters.' },
+      { status: 400 }
+    );
+  }
+
+  if (idea.length > 1000) {
+    return NextResponse.json(
+      { success: false, error: 'Idea description must be under 1000 characters.' },
       { status: 400 }
     );
   }
 
   try {
-    // Call Lamatic flow
-    const execution = await executeIndieFounderRadarFlow(idea);
+    // Call Lamatic flow with request signal and bounded timeout
+    const execution = await executeIndieFounderRadarFlow(idea, {
+      signal: req.signal,
+      timeoutMs: 60_000,
+    });
 
     // Extract raw text from workflow result
     let rawReportText = '';
@@ -60,12 +71,41 @@ export async function POST(req: NextRequest) {
       requestId: execution.requestId,
     });
   } catch (error: unknown) {
-    console.error('Error executing Indie Founder Radar flow:', error);
     const message =
       error instanceof Error
         ? error.message
         : 'Unknown error occurred while analyzing startup idea.';
 
+    const isTimeout =
+      (error instanceof Error && error.name === 'TimeoutError') ||
+      message.toLowerCase().includes('timed out') ||
+      message.toLowerCase().includes('timeout');
+
+    if (isTimeout) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Gateway Timeout: The Lamatic workflow took too long to complete. Please try again.',
+        },
+        { status: 504 }
+      );
+    }
+
+    const isAborted =
+      (error instanceof Error && error.name === 'AbortError') ||
+      message.toLowerCase().includes('aborted');
+
+    if (isAborted) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Request was cancelled by the client.',
+        },
+        { status: 499 }
+      );
+    }
+
+    console.error('Error executing Indie Founder Radar flow:', error);
     return NextResponse.json(
       {
         success: false,

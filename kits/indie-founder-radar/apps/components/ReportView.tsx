@@ -27,20 +27,20 @@ export function ReportView({ report, onReset }: ReportViewProps) {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-500">
       {/* Overview Banner */}
-      <div className="rounded-2xl bg-neutral-900/90 border border-neutral-800 p-5 sm:p-6 backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="rounded-2xl bg-card/90 border border-border p-5 sm:p-6 backdrop-blur-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-xs font-semibold text-primary uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Market Validation Report</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground leading-tight">
             &ldquo;{report.idea}&rdquo;
           </h2>
         </div>
 
         {report.latencyMs && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-800/80 border border-neutral-700/60 text-neutral-400 text-xs font-medium whitespace-nowrap">
-            <Clock className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted border border-border text-muted-foreground text-xs font-medium whitespace-nowrap">
+            <Clock className="w-3.5 h-3.5 text-primary" />
             <span>{(report.latencyMs / 1000).toFixed(1)}s scan time</span>
           </div>
         )}
@@ -63,12 +63,12 @@ export function ReportView({ report, onReset }: ReportViewProps) {
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 font-bold text-xs flex items-center justify-center border border-rose-500/30 mt-0.5">
                     {index + 1}
                   </span>
-                  <span className="text-neutral-200">{point}</span>
+                  <span className="text-card-foreground">{point}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-neutral-400 text-xs italic">
+            <p className="text-muted-foreground text-xs italic">
               No distinct pain points identified in search results.
             </p>
           )}
@@ -89,12 +89,12 @@ export function ReportView({ report, onReset }: ReportViewProps) {
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 font-bold text-xs flex items-center justify-center border border-amber-500/30 mt-0.5">
                     ✕
                   </span>
-                  <span className="text-neutral-200">{weakness}</span>
+                  <span className="text-card-foreground">{weakness}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-neutral-400 text-xs italic">
+            <p className="text-muted-foreground text-xs italic">
               No specific competitor weaknesses identified.
             </p>
           )}
@@ -108,7 +108,7 @@ export function ReportView({ report, onReset }: ReportViewProps) {
           icon={Users}
           badgeColor="cyan"
         >
-          <div className="p-3.5 rounded-xl bg-neutral-950/60 border border-neutral-800 text-neutral-200 leading-relaxed font-normal">
+          <div className="p-3.5 rounded-xl bg-background/60 border border-border text-card-foreground leading-relaxed font-normal">
             {report.targetAudience}
           </div>
         </SectionCard>
@@ -121,7 +121,7 @@ export function ReportView({ report, onReset }: ReportViewProps) {
           icon={TrendingUp}
           badgeColor="purple"
         >
-          <div className="p-3.5 rounded-xl bg-neutral-950/60 border border-neutral-800 text-neutral-200 leading-relaxed font-normal">
+          <div className="p-3.5 rounded-xl bg-background/60 border border-border text-card-foreground leading-relaxed font-normal">
             {report.marketOpportunity}
           </div>
         </SectionCard>
@@ -131,11 +131,11 @@ export function ReportView({ report, onReset }: ReportViewProps) {
       <VerdictBadge report={report} onReset={onReset} />
 
       {/* Collapsible Raw LLM Output */}
-      <div className="border border-neutral-800/80 rounded-2xl bg-neutral-950/40 overflow-hidden">
+      <div className="border border-border rounded-2xl bg-background/40 overflow-hidden">
         <button
           type="button"
           onClick={() => setShowRaw(!showRaw)}
-          className="w-full px-5 py-3 flex items-center justify-between text-xs text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900/50 transition-colors cursor-pointer"
+          className="w-full px-5 py-3 flex items-center justify-between text-xs text-muted-foreground hover:text-foreground hover:bg-card/50 transition-colors cursor-pointer"
         >
           <span className="flex items-center gap-2 font-medium">
             <FileText className="w-3.5 h-3.5" />
@@ -145,7 +145,7 @@ export function ReportView({ report, onReset }: ReportViewProps) {
         </button>
 
         {showRaw && (
-          <div className="p-5 border-t border-neutral-800/80 bg-neutral-950 font-mono text-xs text-neutral-300 whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-96">
+          <div className="p-5 border-t border-border bg-background font-mono text-xs text-foreground/90 whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-96">
             {report.rawReport}
           </div>
         )}

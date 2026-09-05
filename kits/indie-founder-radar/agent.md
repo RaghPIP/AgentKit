@@ -9,8 +9,8 @@ Indie Founder Radar is an autonomous market validation agent designed to analyze
 - **Trigger**: `API Request` (`graphqlNode`) accepting `{ idea: string }`.
 - **Web Search**: `Web Search` (`webSearchNode_630`) via Google Serper API.
 - **Analysis LLM**: `Generate Text` (`LLMNode_276`) evaluating pain points, competitor gaps, target audience, market opportunity, and verdict.
-- **Code Node**: `Code` (`codeNode_148`) preparing output format.
-- **Response**: `API Response` (`responseNode_triggerNode_1`) returning structured report.
+- **Code Node**: `Code` (`codeNode_148`) computes execution metrics and verdict flags.
+- **Response**: `API Response` (`responseNode_triggerNode_1`) returns `LLMNode_276.output.generatedResponse` as `report`. The Next.js route passes this raw output to `parseReportText`, which produces the structured `MarketReport`.
 
 ## Integration
 

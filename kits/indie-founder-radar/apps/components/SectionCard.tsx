@@ -32,9 +32,9 @@ const COLOR_MAP = {
     glow: 'group-hover:border-purple-500/30',
   },
   emerald: {
-    badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-    iconBg: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-    glow: 'group-hover:border-emerald-500/30',
+    badge: 'bg-primary/10 text-primary border-primary/20',
+    iconBg: 'bg-primary/10 border-primary/20 text-primary',
+    glow: 'group-hover:border-primary/30',
   },
 };
 
@@ -50,7 +50,7 @@ export function SectionCard({
 
   return (
     <div
-      className={`group relative rounded-2xl bg-neutral-900/80 border border-neutral-800 p-5 sm:p-6 backdrop-blur-xl shadow-lg transition-all duration-300 hover:shadow-xl ${styles.glow}`}
+      className={`group relative rounded-2xl bg-card/80 border border-border p-5 sm:p-6 backdrop-blur-xl shadow-lg transition-all duration-300 hover:shadow-xl ${styles.glow}`}
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-4">
@@ -60,10 +60,10 @@ export function SectionCard({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-neutral-500">#{number}</span>
-              <h3 className="text-lg font-bold text-white tracking-tight">{title}</h3>
+              <span className="text-xs font-bold text-muted-foreground">#{number}</span>
+              <h3 className="text-lg font-bold text-foreground tracking-tight">{title}</h3>
             </div>
-            <p className="text-xs text-neutral-400 mt-0.5">{subtitle}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
           </div>
         </div>
         <span
@@ -74,7 +74,7 @@ export function SectionCard({
       </div>
 
       {/* Content */}
-      <div className="text-neutral-300 text-sm leading-relaxed space-y-2">
+      <div className="text-card-foreground text-sm leading-relaxed space-y-2">
         {children}
       </div>
     </div>

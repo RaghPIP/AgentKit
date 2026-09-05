@@ -71,14 +71,14 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white relative selection:bg-emerald-500 selection:text-black font-sans pb-20">
+    <main className="min-h-screen bg-background text-foreground relative selection:bg-primary selection:text-primary-foreground font-sans pb-20">
       {/* Background Ambient Glows */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-emerald-600/15 rounded-full blur-[140px]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-primary/15 rounded-full blur-[140px]" />
         <div className="absolute top-1/3 left-1/4 w-[400px] h-[300px] bg-teal-600/10 rounded-full blur-[120px]" />
         <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[350px] bg-cyan-600/10 rounded-full blur-[150px]" />
         {/* Subtle grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293710_1px,transparent_1px),linear-gradient(to_bottom,#1f293710_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 pt-4">
@@ -94,24 +94,24 @@ export default function Home() {
 
         {/* Live Loading State */}
         {isLoading && (
-          <div className="w-full max-w-xl mx-auto rounded-2xl bg-neutral-900/90 border border-neutral-800 p-8 text-center space-y-6 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-300">
+          <div className="w-full max-w-xl mx-auto rounded-2xl bg-card/90 border border-border p-8 text-center space-y-6 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-300">
             {/* Animated Radar Pulse */}
             <div className="relative w-24 h-24 mx-auto flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping [animation-duration:2s]" />
-              <div className="absolute inset-2 rounded-full border border-emerald-500/40 animate-pulse" />
-              <div className="p-4 rounded-full bg-neutral-950 border border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.4)]">
-                <Radar className="w-8 h-8 text-emerald-400 animate-spin [animation-duration:4s]" />
+              <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping [animation-duration:2s]" />
+              <div className="absolute inset-2 rounded-full border border-primary/40 animate-pulse" />
+              <div className="p-4 rounded-full bg-background border border-primary/50 shadow-[0_0_20px_rgba(16,185,129,0.4)]">
+                <Radar className="w-8 h-8 text-primary animate-spin [animation-duration:4s]" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-lg font-bold text-white tracking-tight">
+              <h3 className="text-lg font-bold text-foreground tracking-tight">
                 Scanning Market Radar...
               </h3>
-              <p className="text-sm text-emerald-400 font-medium h-6 transition-all duration-300">
+              <p className="text-sm text-primary font-medium h-6 transition-all duration-300">
                 {SCAN_STEPS[currentStepIndex].label}
               </p>
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs text-muted-foreground">
                 Connecting to Lamatic Serper node & Gemini analyst
               </p>
             </div>
@@ -123,8 +123,8 @@ export default function Home() {
                   key={idx}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
                     idx === currentStepIndex
-                      ? 'w-8 bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.8)]'
-                      : 'w-2 bg-neutral-800'
+                      ? 'w-8 bg-primary shadow-[0_0_10px_rgba(16,185,129,0.8)]'
+                      : 'w-2 bg-muted'
                   }`}
                 />
               ))}
@@ -134,19 +134,19 @@ export default function Home() {
 
         {/* Error Banner */}
         {errorMessage && !isLoading && (
-          <div className="w-full max-w-2xl mx-auto rounded-2xl bg-rose-950/40 border border-rose-500/30 p-5 backdrop-blur-xl space-y-3">
+          <div className="w-full max-w-2xl mx-auto rounded-2xl bg-destructive/10 border border-destructive/30 p-5 backdrop-blur-xl space-y-3">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <h4 className="text-sm font-bold text-rose-300">Analysis Failed</h4>
-                <p className="text-xs text-neutral-300 leading-relaxed">{errorMessage}</p>
+                <h4 className="text-sm font-bold text-destructive">Analysis Failed</h4>
+                <p className="text-xs text-card-foreground leading-relaxed">{errorMessage}</p>
               </div>
             </div>
             <div className="flex justify-end pt-2">
               <button
                 type="button"
                 onClick={() => handleAnalyze(lastIdea)}
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 text-xs font-semibold transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-destructive/20 hover:bg-destructive/30 border border-destructive/40 text-destructive text-xs font-semibold transition-colors cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Retry Scan</span>
@@ -162,7 +162,7 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="mt-20 border-t border-neutral-900 pt-6 text-center text-xs text-neutral-600">
+      <footer className="mt-20 border-t border-border pt-6 text-center text-xs text-muted-foreground">
         <p>
           Indie Founder Radar • Built with Lamatic AgentKit, Next.js & Tailwind CSS
         </p>
