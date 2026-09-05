@@ -80,17 +80,18 @@ export function parseReportText(rawText: string, idea: string, latencyMs?: numbe
     verdictReason = reason;
   }
 
-  // Fallback if structured parsing missed bullets
+  // Fallback if structured parsing could not extract sections
   if (painPoints.length === 0 && !targetAudience && !marketOpportunity) {
-    // If formatting was non-standard, treat lines gracefully
     return {
       idea,
-      painPoints: ['Analyzed market demand and user discussions in this niche.'],
-      competitorWeaknesses: ['Existing tools fail to provide seamless workflows.'],
-      targetAudience: 'Early-stage founders, indie hackers, and creators.',
-      marketOpportunity: 'High growth potential with active community interest.',
-      verdict: verdict !== 'UNCLEAR' ? verdict : 'BUILD',
-      verdictReason: cleanText.slice(0, 300),
+      painPoints: [],
+      competitorWeaknesses: [],
+      targetAudience: 'Unspecified in analysis output.',
+      marketOpportunity: 'Unspecified in analysis output.',
+      verdict: verdict !== 'UNCLEAR' ? verdict : 'UNCLEAR',
+      verdictReason:
+        verdictReason ||
+        'Unable to parse structured market gap sections from the AI response. Please inspect the raw model output below or retry with a more specific idea description.',
       rawReport: cleanText,
       timestamp: new Date().toISOString(),
       latencyMs,
@@ -99,12 +100,18 @@ export function parseReportText(rawText: string, idea: string, latencyMs?: numbe
 
   return {
     idea,
-    painPoints: painPoints.length > 0 ? painPoints : ['No clear pain points detected in current search data.'],
-    competitorWeaknesses: competitorWeaknesses.length > 0 ? competitorWeaknesses : ['No dominant competitor weakness specified.'],
-    targetAudience: targetAudience || 'Indie hackers, early-stage product builders, and target niche operators.',
-    marketOpportunity: marketOpportunity || 'Emerging market segment with validation required.',
+    painPoints: painPoints.length > 0 ? painPoints : [],
+    competitorWeaknesses: competitorWeaknesses.length > 0 ? competitorWeaknesses : [],
+    targetAudience: targetAudience || 'Unspecified in analysis output.',
+    marketOpportunity: marketOpportunity || 'Unspecified in analysis output.',
     verdict,
-    verdictReason: verdictReason || (verdict === 'BUILD' ? 'Promising market gap with high founder leverage.' : 'Crowded market or high customer acquisition friction.'),
+    verdictReason:
+      verdictReason ||
+      (verdict === 'BUILD'
+        ? 'Promising market gap with high founder leverage.'
+        : verdict === 'SKIP'
+        ? 'Crowded market or high customer acquisition friction identified.'
+        : 'Inconclusive market analysis from search data.'),
     rawReport: cleanText,
     timestamp: new Date().toISOString(),
     latencyMs,

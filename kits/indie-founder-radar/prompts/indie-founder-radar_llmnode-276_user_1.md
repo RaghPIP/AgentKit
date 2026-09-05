@@ -1,4 +1,3 @@
-Previous analysis on similar ideas: {{memoryRetrieveNode_608.output.memories}}
 Startup idea: {{idea}}
 Web search results: {{webSearchNode_630.output.output}}
 Based on the above search results, generate a market gap report with:
@@ -6,4 +5,4 @@ Based on the above search results, generate a market gap report with:
 2. **Competitor Weaknesses** - What existing solutions are missing
 3. **Target Audience** - Who needs this most
 4. **Market Opportunity** - Is this space growing or saturated?
-5. **Verdict** - BUILD ✅ or SKIP ❌ and why in 2 sentence
+5. **Verdict** - BUILD ✅ or SKIP ❌ and why in 2 sentences

@@ -56,16 +56,22 @@ export function ReportView({ report, onReset }: ReportViewProps) {
           icon={Flame}
           badgeColor="rose"
         >
-          <ul className="space-y-2.5">
-            {report.painPoints.map((point, index) => (
-              <li key={index} className="flex items-start gap-2.5">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 font-bold text-xs flex items-center justify-center border border-rose-500/30 mt-0.5">
-                  {index + 1}
-                </span>
-                <span className="text-neutral-200">{point}</span>
-              </li>
-            ))}
-          </ul>
+          {report.painPoints.length > 0 ? (
+            <ul className="space-y-2.5">
+              {report.painPoints.map((point, index) => (
+                <li key={index} className="flex items-start gap-2.5">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 font-bold text-xs flex items-center justify-center border border-rose-500/30 mt-0.5">
+                    {index + 1}
+                  </span>
+                  <span className="text-neutral-200">{point}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-neutral-400 text-xs italic">
+              No distinct pain points identified in search results.
+            </p>
+          )}
         </SectionCard>
 
         {/* Section 2: Competitor Weaknesses */}
@@ -76,16 +82,22 @@ export function ReportView({ report, onReset }: ReportViewProps) {
           icon={ShieldAlert}
           badgeColor="amber"
         >
-          <ul className="space-y-2.5">
-            {report.competitorWeaknesses.map((weakness, index) => (
-              <li key={index} className="flex items-start gap-2.5">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 font-bold text-xs flex items-center justify-center border border-amber-500/30 mt-0.5">
-                  ✕
-                </span>
-                <span className="text-neutral-200">{weakness}</span>
-              </li>
-            ))}
-          </ul>
+          {report.competitorWeaknesses.length > 0 ? (
+            <ul className="space-y-2.5">
+              {report.competitorWeaknesses.map((weakness, index) => (
+                <li key={index} className="flex items-start gap-2.5">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 font-bold text-xs flex items-center justify-center border border-amber-500/30 mt-0.5">
+                    ✕
+                  </span>
+                  <span className="text-neutral-200">{weakness}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-neutral-400 text-xs italic">
+              No specific competitor weaknesses identified.
+            </p>
+          )}
         </SectionCard>
 
         {/* Section 3: Target Audience */}

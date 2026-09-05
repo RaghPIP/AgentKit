@@ -10,6 +10,6 @@ export default {
   ],
   links: {
     github: "https://github.com/Lamatic/AgentKit/tree/main/kits/indie-founder-radar",
-    deploy: "https://vercel.com/new/clone?repository-url=https://github.com/Lamatic/AgentKit&root-directory=kits/indie-founder-radar/apps&env=LAMATIC_API_URL,LAMATIC_PROJECT_ID,LAMATIC_FLOW_ID,LAMATIC_API_KEY&envDescription=Your%20Lamatic%20API%20credentials%20are%20required.&envLink=https://github.com/Lamatic/AgentKit/tree/main/kits/indie-founder-radar%23readme"
+    deploy: "https://vercel.com/new/clone?repository-url=https://github.com/Lamatic/AgentKit&root-directory=kits/indie-founder-radar/apps&env=INDIE_FOUNDER_RADAR_FLOW_ID,LAMATIC_API_URL,LAMATIC_PROJECT_ID,LAMATIC_API_KEY&envDescription=Your%20Lamatic%20API%20credentials%20are%20required.&envLink=https://github.com/Lamatic/AgentKit/tree/main/kits/indie-founder-radar%23readme"
   }
 };

@@ -18,5 +18,6 @@ Indie Founder Radar is an autonomous market validation agent designed to analyze
 - **Environment Variables**:
   - `LAMATIC_API_URL`
   - `LAMATIC_PROJECT_ID`
-  - `LAMATIC_FLOW_ID`
+  - `INDIE_FOUNDER_RADAR_FLOW_ID`
   - `LAMATIC_API_KEY`
+

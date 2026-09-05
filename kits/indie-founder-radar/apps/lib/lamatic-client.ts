@@ -20,7 +20,11 @@ export interface LamaticConfig {
 export function getLamaticConfig(): LamaticConfig {
   let apiUrl = (process.env.LAMATIC_API_URL || '').trim();
   let projectId = (process.env.LAMATIC_PROJECT_ID || 'FactcheckAi595').trim();
-  let flowId = (process.env.LAMATIC_FLOW_ID || 'e4705e2f-5405-4e00-aaf9-7e6263459012').trim();
+  let flowId = (
+    process.env.INDIE_FOUNDER_RADAR_FLOW_ID ||
+    process.env.LAMATIC_FLOW_ID ||
+    'e4705e2f-5405-4e00-aaf9-7e6263459012'
+  ).trim();
   const apiKey = (process.env.LAMATIC_API_KEY || '').trim();
   const studioUrl = (process.env.LAMATIC_STUDIO_URL || '').trim();
 
@@ -34,8 +38,8 @@ export function getLamaticConfig(): LamaticConfig {
     }
   }
 
-  // Ensure valid endpoint structure
-  if (apiUrl && !apiUrl.startsWith('http')) {
+  // Ensure valid endpoint structure with HTTPS
+  if (apiUrl && !apiUrl.startsWith('http://') && !apiUrl.startsWith('https://')) {
     apiUrl = `https://${apiUrl}`;
   }
 
@@ -77,6 +81,13 @@ export async function executeIndieFounderRadarFlow(
     } else {
       endpoint = `${endpoint}/graphql`;
     }
+  }
+
+  // Reject insecure HTTP connections to prevent cleartext transmission of sensitive credentials (CWE-319)
+  if (!endpoint.startsWith('https://')) {
+    throw new Error(
+      `Insecure connection rejected: LAMATIC_API_URL must use the HTTPS protocol (https://) to protect API credentials. Provided: "${endpoint}"`
+    );
   }
 
   const query = `
