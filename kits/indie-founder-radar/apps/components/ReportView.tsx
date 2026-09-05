@@ -60,7 +60,7 @@ export function ReportView({ report, onReset }: ReportViewProps) {
             <ul className="space-y-2.5">
               {report.painPoints.map((point, index) => (
                 <li key={index} className="flex items-start gap-2.5">
-                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 font-bold text-xs flex items-center justify-center border border-rose-500/30 mt-0.5">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-destructive/20 text-destructive font-bold text-xs flex items-center justify-center border border-destructive/30 mt-0.5">
                     {index + 1}
                   </span>
                   <span className="text-card-foreground">{point}</span>
@@ -86,7 +86,7 @@ export function ReportView({ report, onReset }: ReportViewProps) {
             <ul className="space-y-2.5">
               {report.competitorWeaknesses.map((weakness, index) => (
                 <li key={index} className="flex items-start gap-2.5">
-                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 font-bold text-xs flex items-center justify-center border border-amber-500/30 mt-0.5">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-warning/20 text-warning font-bold text-xs flex items-center justify-center border border-warning/30 mt-0.5">
                     ✕
                   </span>
                   <span className="text-card-foreground">{weakness}</span>

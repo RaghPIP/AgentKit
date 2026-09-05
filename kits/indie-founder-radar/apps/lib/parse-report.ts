@@ -80,17 +80,21 @@ export function parseReportText(rawText: string, idea: string, latencyMs?: numbe
     verdictReason = reason;
   }
 
-  // Fallback if structured parsing could not extract sections
-  if (painPoints.length === 0 && !targetAudience && !marketOpportunity) {
+  // Fallback if structured parsing could not extract any sections
+  if (
+    painPoints.length === 0 &&
+    competitorWeaknesses.length === 0 &&
+    !targetAudience &&
+    !marketOpportunity
+  ) {
     return {
       idea,
       painPoints: [],
       competitorWeaknesses: [],
       targetAudience: 'Unspecified in analysis output.',
       marketOpportunity: 'Unspecified in analysis output.',
-      verdict: verdict !== 'UNCLEAR' ? verdict : 'UNCLEAR',
+      verdict: 'UNCLEAR',
       verdictReason:
-        verdictReason ||
         'Unable to parse structured market gap sections from the AI response. Please inspect the raw model output below or retry with a more specific idea description.',
       rawReport: cleanText,
       timestamp: new Date().toISOString(),
